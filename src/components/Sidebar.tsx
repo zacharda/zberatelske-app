@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, PanelLeft, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
