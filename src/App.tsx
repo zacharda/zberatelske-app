@@ -3,6 +3,8 @@ import { Routes, Route, Link } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import supabase from "./utils/supabase";
 import CoinDetail from "./pages/CoinDetail.tsx";
+import ScrollToTop from "./components/ScrollToTop.tsx";
+
 
 type Coin = {
   id: number;
@@ -17,31 +19,8 @@ function CoinList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedScrollY = sessionStorage.getItem("coinListScroll");
-    if (savedScrollY) {
-      window.scrollTo(0, parseInt(savedScrollY, 10));
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      sessionStorage.setItem("coinListScroll", window.scrollY.toString());
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      sessionStorage.setItem("coinListScroll", window.scrollY.toString());
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-
-  // 🔹 Fetch coins
-  useEffect(() => {
     const fetchCoins = async () => {
-      const { data, error } = await supabase
-        .from("coins")
-        .select("*")
-        .order("issueDate", { ascending: false });
+      const { data, error } = await supabase.from("coins").select("*").order("issueDate", { ascending: false });;
       if (error) console.error("Error loading coins:", error);
       else setCoins(data);
       setLoading(false);
@@ -65,9 +44,6 @@ function CoinList() {
                 <Link
                   key={coin.id}
                   to={`/coin/${coin.id}`}
-                  onClick={() =>
-                    sessionStorage.setItem("coinListScroll", window.scrollY.toString())
-                  }
                   className="group bg-white p-4 flex flex-col justify-between aspect-square rounded-xl 
                     transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:bg-gray-50"
                 >
@@ -76,6 +52,7 @@ function CoinList() {
                       className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] 
                       group-hover:[transform:rotateY(180deg)]"
                     >
+                      {/* front */}
                       <div className="absolute inset-0 backface-hidden rounded-lg overflow-hidden">
                         <img
                           src={coin.imageFront}
@@ -83,6 +60,7 @@ function CoinList() {
                           className="object-cover w-full h-full"
                         />
                       </div>
+                      {/* back */}
                       <div className="absolute inset-0 [transform:rotateY(180deg)] backface-hidden rounded-lg overflow-hidden">
                         <img
                           src={coin.imageBack}
@@ -107,11 +85,11 @@ function CoinList() {
   );
 }
 
-
 function App() {
   return (
     <div className="flex flex-col min-h-screen relative">
       <Sidebar />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<CoinList />} />
         <Route path="/coin/:id" element={<CoinDetail />} />
