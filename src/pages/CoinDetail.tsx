@@ -10,7 +10,7 @@ type Coin = {
   imageFront: string;
   imageBack: string;
   description: string;
-  isuueDate: string;
+  issueDate: string;
 };
 
 export default function CoinDetail() {
@@ -86,7 +86,7 @@ export default function CoinDetail() {
             {coin.description}
           </p>
           <p className="text-gray-700 text-lg">
-            <strong>Dátum vydania:</strong> {coin.isuueDate}
+            <strong>Dátum vydania:</strong> {coin.issueDate}
           </p>
         </div>
       </div>
