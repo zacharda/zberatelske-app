@@ -86,7 +86,7 @@ export default function CoinDetail() {
             {coin.description}
           </p>
           <p className="text-gray-700 text-lg">
-            <strong>Dátum vydania:</strong> {coin.issueDate}
+            <strong>Dátum vydania:</strong> {coin.issueDate.slice(8, 10).concat(". ", parseInt(coin.issueDate.slice(5, 7), 10).toString(), ". ", coin.issueDate.slice(0, 4) )}
           </p>
         </div>
       </div>
