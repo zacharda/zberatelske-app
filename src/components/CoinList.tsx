@@ -17,7 +17,7 @@ type Props = {
   onSelect: (v: FaceValue) => void
 }
 
-export default function CoinList({ selectedFaceValue, onSelect }: Props) {
+export default function CoinList({ onSelect }: Props) {
   const { filter } = useParams()
   const [coins, setCoins] = useState<Coin[]>([])
   const [loading, setLoading] = useState(true)
