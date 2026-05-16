@@ -4,6 +4,7 @@ import CoinList from "./components/CoinList"
 import CoinDetail from "./pages/CoinDetail"
 import Auth from "./pages/Auth"
 import Profile from "./pages/Profile"
+import Confirmed from "./pages/Confirmed"
 import { useState } from "react"
 
 export type FaceValue = number | "all"
@@ -23,6 +24,8 @@ function App() {
         <Route path="/prihlasenie" element={<Auth />} />
 
         <Route path="/profil" element={<Profile />} />
+
+        <Route path="/potvrdene" element={<Confirmed />} />
 
         <Route path="/" element={<CoinList selectedFaceValue={selectedFaceValue} onSelect={setSelectedFaceValue} />} />
       </Routes>

@@ -21,6 +21,7 @@ export default function CoinList({ onSelect }: Props) {
   const { filter } = useParams()
   const [coins, setCoins] = useState<Coin[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!filter) {
@@ -44,7 +45,12 @@ export default function CoinList({ onSelect }: Props) {
       }
 
       const { data, error } = await query
-      if (!error) setCoins(data || [])
+      if (error) {
+        console.error("Error loading coins:", error)
+        setError(error.message)
+      } else {
+        setCoins(data || [])
+      }
       setLoading(false)
     }
 
@@ -60,6 +66,10 @@ export default function CoinList({ onSelect }: Props) {
       <div className="px-6 pb-6">
         {loading ? (
           <p>Načítavam...</p>
+        ) : error ? (
+          <p className="text-red-600">Mince sa nepodarilo načítať: {error}</p>
+        ) : coins.length === 0 ? (
+          <p className="text-gray-500">Žiadne mince sa nenašli.</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {coins.map((coin) => (
