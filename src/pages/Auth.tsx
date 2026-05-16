@@ -13,6 +13,7 @@ export default function Auth() {
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [resending, setResending] = useState(false)
   const navigate = useNavigate()
@@ -25,10 +26,20 @@ export default function Auth() {
     if (user) navigate("/profil")
   }, [user, navigate])
 
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const passwordsMatch = password === confirmPassword
+  const showEmailError = submitted && !emailValid
+  const showMatchError = submitted && mode === "signup" && !passwordsMatch
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
     setInfo(null)
+    setSubmitted(true)
+
+    if (!emailValid) return
+    if (mode === "signup" && !passwordsMatch) return
+
     setSubmitting(true)
 
     if (mode === "login") {
@@ -36,12 +47,6 @@ export default function Auth() {
       if (error) setError(error.message)
       else navigate("/profil")
     } else {
-      if (password !== confirmPassword) {
-        setError("Heslá sa nezhodujú.")
-        setSubmitting(false)
-        return
-      }
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -56,13 +61,6 @@ export default function Auth() {
 
     setSubmitting(false)
   }
-
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  const passwordsMatch = password === confirmPassword
-  const showEmailError = email.length > 0 && !emailValid
-  const showMatchError = mode === "signup" && confirmPassword.length > 0 && !passwordsMatch
-  const canSubmit =
-    emailValid && password.length >= 6 && (mode === "login" || (confirmPassword.length >= 6 && passwordsMatch))
 
   const handleResend = async () => {
     setError(null)
@@ -96,7 +94,7 @@ export default function Auth() {
 
         <h2 className="text-2xl font-bold mb-6">{mode === "login" ? "Prihlásenie" : "Registrácia"}</h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
           <div>
             <input
               type="email"
@@ -147,8 +145,8 @@ export default function Auth() {
 
           <button
             type="submit"
-            disabled={submitting || !canSubmit}
-            className="bg-black text-white rounded-xl px-4 py-2 font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            disabled={submitting}
+            className="bg-black text-white rounded-xl px-4 py-2 font-semibold hover:bg-gray-800 transition disabled:opacity-50">
             {submitting ? "Načítavam..." : mode === "login" ? "Prihlásiť sa" : "Zaregistrovať sa"}
           </button>
 
@@ -170,6 +168,7 @@ export default function Auth() {
             setInfo(null)
             setConfirmPassword("")
             setAwaitingConfirmation(false)
+            setSubmitted(false)
           }}
           className="mt-6 text-gray-600 hover:text-gray-800 text-sm">
           {mode === "login" ? "Nemáte účet? Zaregistrujte sa" : "Už máte účet? Prihláste sa"}
