@@ -30,7 +30,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      await supabase.auth.signOut({ scope: "local" })
+    } catch {
+      // Ignore server-side revoke failures; we still clear the local session below.
+    }
+    setSession(null)
   }
 
   return (
