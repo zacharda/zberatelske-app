@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom"
 import Sidebar from "./components/Sidebar"
 import CoinList from "./components/CoinList"
 import CoinDetail from "./pages/CoinDetail"
+import Auth from "./pages/Auth"
+import Profile from "./pages/Profile"
 import { useState } from "react"
 
 export type FaceValue = number | "all"
@@ -17,6 +19,10 @@ function App() {
         <Route path="/coins/:filter" element={<CoinList selectedFaceValue={selectedFaceValue} onSelect={setSelectedFaceValue} />} />
 
         <Route path="/coins/:filter/coin/:id" element={<CoinDetail />} />
+
+        <Route path="/prihlasenie" element={<Auth />} />
+
+        <Route path="/profil" element={<Profile />} />
 
         <Route path="/" element={<CoinList selectedFaceValue={selectedFaceValue} onSelect={setSelectedFaceValue} />} />
       </Routes>

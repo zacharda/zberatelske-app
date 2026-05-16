@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useNavigate } from "react-router-dom"
 import supabase from "../utils/supabase"
-import { ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react"
+import { ChevronLeft, ChevronRight, ArrowLeft, Check, Plus } from "lucide-react"
+import { useAuth } from "../context/AuthContext"
 
 type Coin = {
   id: number
@@ -15,9 +16,13 @@ type Coin = {
 
 export default function CoinDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [coin, setCoin] = useState<Coin | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentImage, setCurrentImage] = useState(0)
+  const [inCollection, setInCollection] = useState(false)
+  const [togglingCollection, setTogglingCollection] = useState(false)
 
   useEffect(() => {
     const fetchCoin = async () => {
@@ -30,6 +35,43 @@ export default function CoinDetail() {
     }
     fetchCoin()
   }, [id])
+
+  useEffect(() => {
+    if (!user || !id) {
+      setInCollection(false)
+      return
+    }
+    const checkCollection = async () => {
+      const { data } = await supabase
+        .from("collections")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("coin_id", id)
+        .maybeSingle()
+      setInCollection(!!data)
+    }
+    checkCollection()
+  }, [user, id])
+
+  const toggleCollection = async () => {
+    if (!user) {
+      navigate("/prihlasenie")
+      return
+    }
+    if (!coin) return
+
+    setTogglingCollection(true)
+
+    if (inCollection) {
+      const { error } = await supabase.from("collections").delete().eq("user_id", user.id).eq("coin_id", coin.id)
+      if (!error) setInCollection(false)
+    } else {
+      const { error } = await supabase.from("collections").insert({ user_id: user.id, coin_id: coin.id })
+      if (!error) setInCollection(true)
+    }
+
+    setTogglingCollection(false)
+  }
 
   if (loading) {
     return <p className="mt-24 text-center text-gray-500">Načítavam...</p>
@@ -86,6 +128,22 @@ export default function CoinDetail() {
               .slice(8, 10)
               .concat(". ", parseInt(coin.issueDate.slice(5, 7), 10).toString(), ". ", coin.issueDate.slice(0, 4))}
           </p>
+
+          <button
+            onClick={toggleCollection}
+            disabled={togglingCollection}
+            className={`mt-6 flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition disabled:opacity-50 ${
+              inCollection
+                ? "bg-green-100 text-green-800 hover:bg-green-200"
+                : "bg-black text-white hover:bg-gray-800"
+            }`}>
+            {inCollection ? <Check size={20} /> : <Plus size={20} />}
+            {!user
+              ? "Pridať do zbierky"
+              : inCollection
+                ? "V zbierke – odobrať"
+                : "Pridať do zbierky"}
+          </button>
         </div>
       </div>
     </div>
