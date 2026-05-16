@@ -1,7 +1,8 @@
 import { useState } from "react"
-import { Menu } from "lucide-react"
+import { Menu, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import type { FaceValue } from "../App"
+import { useAuth } from "../context/AuthContext"
 
 type SidebarProps = {
   selectedFaceValue: FaceValue
@@ -11,6 +12,7 @@ type SidebarProps = {
 export default function Sidebar({ selectedFaceValue, onSelect }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const handleSelect = (value: FaceValue) => {
     onSelect(value)
@@ -53,6 +55,13 @@ export default function Sidebar({ selectedFaceValue, onSelect }: SidebarProps) {
             20 euro
           </button>
         </div>
+
+        <button
+          onClick={() => navigate(user ? "/profil" : "/prihlasenie")}
+          className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl text-black hover:bg-gray-100 transition">
+          <User size={20} />
+          <span className="hidden sm:inline">{user ? "Profil" : "Prihlásiť"}</span>
+        </button>
       </div>
 
       {/* slide in mobile sidebar */}
