@@ -5,6 +5,8 @@ import CoinDetail from "./pages/CoinDetail"
 import Auth from "./pages/Auth"
 import Profile from "./pages/Profile"
 import Confirmed from "./pages/Confirmed"
+import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
 import { useState } from "react"
 
 export type FaceValue = number | "all"
@@ -26,6 +28,10 @@ function App() {
         <Route path="/profil" element={<Profile />} />
 
         <Route path="/potvrdene" element={<Confirmed />} />
+
+        <Route path="/zabudnute-heslo" element={<ForgotPassword />} />
+
+        <Route path="/obnova-hesla" element={<ResetPassword />} />
 
         <Route path="/" element={<CoinList selectedFaceValue={selectedFaceValue} onSelect={setSelectedFaceValue} />} />
       </Routes>
