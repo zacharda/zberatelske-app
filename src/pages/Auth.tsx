@@ -19,8 +19,8 @@ export default function Auth() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
-  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
-  const redirectUrl = `${siteUrl}/potvrdene`
+  const siteOrigin = new URL(import.meta.env.VITE_SITE_URL || window.location.origin).origin
+  const redirectUrl = `${siteOrigin}/potvrdene`
 
   useEffect(() => {
     if (user) navigate("/profil")

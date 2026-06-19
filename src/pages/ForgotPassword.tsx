@@ -22,9 +22,9 @@ export default function ForgotPassword() {
     if (!emailValid) return
 
     setSubmitting(true)
-    const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
+    const siteOrigin = new URL(import.meta.env.VITE_SITE_URL || window.location.origin).origin
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteUrl}/obnova-hesla`,
+      redirectTo: `${siteOrigin}/obnova-hesla`,
     })
     if (error) setError(error.message)
     else setInfo("Ak email existuje, poslali sme vám odkaz na obnovu hesla. Skontrolujte si schránku.")
